@@ -1,0 +1,30 @@
+@startuml
+left to right direction
+actor Administrateur
+actor Responsable
+actor Technicien
+rectangle MaintenX {
+  usecase "Se connecter" as Login
+  usecase "Gérer utilisateurs" as Users
+  usecase "Gérer techniciens" as Techs
+  usecase "Gérer interventions" as Ints
+  usecase "Affecter technicien" as Assign
+  usecase "Changer statut" as Status
+  usecase "Recherche avancée" as Search
+  usecase "Consulter statistiques" as Stats
+  usecase "Exporter CSV" as Csv
+}
+Administrateur --> Login
+Administrateur --> Users
+Administrateur --> Techs
+Administrateur --> Ints
+Responsable --> Login
+Responsable --> Ints
+Responsable --> Assign
+Responsable --> Search
+Technicien --> Login
+Technicien --> Status
+Ints ..> Assign : <<include>>
+Search ..> Csv : <<extend>>
+Stats ..> Search : <<include>>
+@enduml

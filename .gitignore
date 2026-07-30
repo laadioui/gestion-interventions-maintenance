@@ -1,0 +1,15 @@
+target/
+*.class
+*.log
+logs/
+.idea/
+*.iml
+.classpath
+.project
+.settings/
+nbproject/private/
+build/
+dist/
+src/main/resources/config.properties
+*.csv
+exports/

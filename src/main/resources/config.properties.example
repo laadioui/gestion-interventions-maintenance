@@ -1,0 +1,5 @@
+db.url=jdbc:mysql://localhost:3306/gestion_maintenance
+db.user=root
+db.password=
+app.name=MaintenX
+app.version=1.0.0

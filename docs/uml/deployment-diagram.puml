@@ -1,0 +1,5 @@
+@startuml
+node "Poste utilisateur" { artifact "maintenx.jar" }
+node "Serveur MySQL" { database "gestion_maintenance" }
+"maintenx.jar" --> "gestion_maintenance" : JDBC
+@enduml

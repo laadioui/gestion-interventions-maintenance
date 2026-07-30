@@ -1,0 +1,12 @@
+@startuml
+actor Utilisateur
+participant LoginFrame
+participant LoginController
+participant AuthenticationService
+participant JournalActiviteService
+Utilisateur -> LoginFrame : saisir identifiants
+LoginFrame -> LoginController : login()
+LoginController -> AuthenticationService : login(username,password)
+AuthenticationService -> JournalActiviteService : log(CONNEXION)
+LoginController -> MainFrame : ouvrir session
+@enduml

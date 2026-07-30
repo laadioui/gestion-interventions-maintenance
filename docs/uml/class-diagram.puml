@@ -1,0 +1,25 @@
+@startuml
+class Utilisateur
+class Technicien
+class Intervention
+class HistoriqueIntervention
+enum Role
+enum Priorite
+enum StatutIntervention
+enum Specialite
+interface UtilisateurService
+interface TechnicienService
+interface InterventionService
+interface GenericDAO
+class UtilisateurDAOImpl
+class InterventionDAOImpl
+Utilisateur "1" -- "0..*" Intervention : demandeur
+Technicien "0..1" -- "0..*" Intervention : affectation
+Intervention "1" -- "0..*" HistoriqueIntervention
+Utilisateur --> Role
+Technicien --> Specialite
+Intervention --> Priorite
+Intervention --> StatutIntervention
+UtilisateurDAOImpl ..|> GenericDAO
+InterventionDAOImpl ..|> GenericDAO
+@enduml

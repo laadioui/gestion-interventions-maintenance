@@ -1,0 +1,12 @@
+@startuml
+actor Responsable
+participant InterventionPanel
+participant InterventionController
+participant InterventionService
+participant HistoriqueService
+Responsable -> InterventionPanel : formulaire
+InterventionPanel -> InterventionController : create(intervention)
+InterventionController -> InterventionService : create()
+InterventionService -> HistoriqueService : add(CREATION)
+InterventionService --> InterventionController : intervention référencée
+@enduml

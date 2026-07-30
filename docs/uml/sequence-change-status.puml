@@ -1,0 +1,10 @@
+@startuml
+actor Technicien
+participant InterventionPanel
+participant InterventionService
+participant HistoriqueService
+Technicien -> InterventionPanel : changer statut
+InterventionPanel -> InterventionService : changeStatus()
+InterventionService -> InterventionService : valider règles métier
+InterventionService -> HistoriqueService : add(CHANGEMENT_STATUT)
+@enduml

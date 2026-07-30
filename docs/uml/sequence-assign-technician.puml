@@ -1,0 +1,11 @@
+@startuml
+actor Responsable
+participant InterventionPanel
+participant InterventionService
+participant TechnicienService
+participant HistoriqueService
+Responsable -> InterventionPanel : affecter
+InterventionPanel -> InterventionService : assign(id, technicien)
+InterventionService -> TechnicienService : requireAssignable()
+InterventionService -> HistoriqueService : add(AFFECTATION)
+@enduml

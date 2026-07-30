@@ -1,0 +1,20 @@
+@startuml
+start
+:Création;
+:OUVERTE;
+if (Technicien affecté ?) then (oui)
+  :AFFECTEE;
+  :EN_COURS;
+  if (Blocage ?) then (oui)
+    :EN_ATTENTE;
+  endif
+  if (Solution saisie ?) then (oui)
+    :TERMINEE;
+  else (non)
+    :Erreur de validation;
+  endif
+else (annulation)
+  :ANNULEE;
+endif
+stop
+@enduml

@@ -1,0 +1,11 @@
+@startuml
+component "Swing Views" as V
+component "Controllers" as C
+component "Services métier" as S
+component "DAO JDBC" as D
+database "MySQL 8" as DB
+V --> C
+C --> S
+S --> D
+D --> DB
+@enduml

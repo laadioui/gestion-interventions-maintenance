@@ -1,0 +1,10 @@
+@startuml
+entity utilisateur { *id : BIGINT <<PK>>; email; nom_utilisateur; role }
+entity technicien { *id : BIGINT <<PK>>; matricule; specialite; actif }
+entity intervention { *id : BIGINT <<PK>>; reference; statut; priorite; demandeur_id <<FK>>; technicien_id <<FK>> }
+entity historique_intervention { *id : BIGINT <<PK>>; intervention_id <<FK>>; action }
+entity journal_activite { *id : BIGINT <<PK>>; utilisateur; action }
+utilisateur ||--o{ intervention
+technicien ||--o{ intervention
+intervention ||--o{ historique_intervention
+@enduml
