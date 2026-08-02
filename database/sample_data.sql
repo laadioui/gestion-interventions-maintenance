@@ -2,9 +2,9 @@ USE gestion_maintenance;
 -- Mots de passe de démonstration documentés : Admin123!, Resp123!, Tech123!
 -- Les hashes BCrypt ci-dessous sont des exemples valides à remplacer si besoin par l'application.
 INSERT INTO utilisateur(nom,prenom,email,nom_utilisateur,mot_de_passe_hash,role,telephone) VALUES
-('LAADIOUI','Othmane','admin@maintenx.local','admin','$2a$12$qR0AXw4ClhquxHqAcb49k.4tD1gGDXgtxZ0wvuN0NA9QKL0vVnU1y','ADMINISTRATEUR','0600000001'),
-('El Ghazi','Anass','responsable@maintenx.local','responsable','$2a$12$qR0AXw4ClhquxHqAcb49k.4tD1gGDXgtxZ0wvuN0NA9QKL0vVnU1y','RESPONSABLE','0600000002'),
-('Technicien','Ali','tech@maintenx.local','tech','$2a$12$qR0AXw4ClhquxHqAcb49k.4tD1gGDXgtxZ0wvuN0NA9QKL0vVnU1y','TECHNICIEN','0600000003');
+('LAADIOUI','Othmane','admin@maintenx.local','admin','$2a$12$E.zO/5Y.wgthIna2fVmbsOCHNAQg5UFZd6/zLUeKePnVLbpl0OxcK','ADMINISTRATEUR','0600000001'),
+('El Ghazi','Anass','responsable@maintenx.local','responsable','$2a$12$kDiOOUiAcj7GkheK02adL.r2LrXg0GTVp37dhRHVmC2RxVpO2aa2i','RESPONSABLE','0600000002'),
+('Technicien','Ali','tech@maintenx.local','tech','$2a$12$IKQZ/.ogecldX5UMD1XpUuCdNjTa/2QsY75KxlkoOShNYuE7h4vq6','TECHNICIEN','0600000003');
 INSERT INTO technicien(matricule,nom,prenom,email,telephone,specialite) VALUES
 ('TEC-001','Benali','Youssef','y.benali@sirecom.local','0611111111','INFORMATIQUE'),
 ('TEC-002','Haddad','Sara','s.haddad@sirecom.local','0622222222','RESEAU'),
