@@ -11,5 +11,8 @@ public interface InterventionService {
     void assign(long interventionId, long technicienId, Utilisateur actor);
     void changeStatus(long interventionId, StatutIntervention status, String solution, Utilisateur actor);
     void cancel(long interventionId, Utilisateur actor);
+    void addDiagnostic(long interventionId, String diagnostic, Utilisateur actor);
+    void addSolution(long interventionId, String solution, Utilisateur actor);
+    void addCommentaire(long interventionId, String commentaire, Utilisateur actor);
     File exportCsv(List<Intervention> interventions, File file);
 }

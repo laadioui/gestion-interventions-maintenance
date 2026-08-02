@@ -2,6 +2,7 @@ package com.maintenx.controller;
 
 import com.maintenx.model.Utilisateur;
 import com.maintenx.service.*;
+import com.maintenx.view.LoginFrame;
 import com.maintenx.view.MainFrame;
 import javax.swing.*;
 
@@ -21,6 +22,8 @@ public class LoginController {
     public void login(JFrame loginFrame, String username, String password) {
         Utilisateur user = auth.login(username, password);
         loginFrame.dispose();
-        new MainFrame(user, utilisateurs, techniciens, interventions, dashboard, historique, journal, export, configuration).setVisible(true);
+        var main = new MainFrame(user, utilisateurs, techniciens, interventions, dashboard, historique, journal, export, configuration, () ->
+                new LoginFrame(LoginController.this).setVisible(true));
+        main.setVisible(true);
     }
 }

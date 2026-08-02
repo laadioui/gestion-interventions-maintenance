@@ -13,6 +13,7 @@ public final class DemoDataFactory {
         s.utilisateurs.add(new Utilisateur(s.userSeq.getAndIncrement(), "LAADIOUI", "Othmane", "admin@maintenx.local", "admin", PasswordHasher.hash("Admin123!"), Role.ADMINISTRATEUR, "0600000001", true));
         s.utilisateurs.add(new Utilisateur(s.userSeq.getAndIncrement(), "El Ghazi", "Anass", "responsable@maintenx.local", "responsable", PasswordHasher.hash("Resp123!"), Role.RESPONSABLE, "0600000002", true));
         s.utilisateurs.add(new Utilisateur(s.userSeq.getAndIncrement(), "Technicien", "Ali", "tech@maintenx.local", "tech", PasswordHasher.hash("Tech123!"), Role.TECHNICIEN, "0600000003", true));
+        s.utilisateurs.add(new Utilisateur(s.userSeq.getAndIncrement(), "Demandeur", "Test", "demandeur@maintenx.local", "demandeur", PasswordHasher.hash("Dem123!"), Role.DEMANDEUR, "0600000004", true));
         s.techniciens.add(new Technicien(s.techSeq.getAndIncrement(), "TEC-001", "Benali", "Youssef", "y.benali@sirecom.local", "0611111111", Specialite.INFORMATIQUE, true, true));
         s.techniciens.add(new Technicien(s.techSeq.getAndIncrement(), "TEC-002", "Haddad", "Sara", "s.haddad@sirecom.local", "0622222222", Specialite.RESEAU, true, true));
         s.techniciens.add(new Technicien(s.techSeq.getAndIncrement(), "TEC-003", "Amrani", "Karim", "k.amrani@sirecom.local", "0633333333", Specialite.ELECTRICITE, true, true));

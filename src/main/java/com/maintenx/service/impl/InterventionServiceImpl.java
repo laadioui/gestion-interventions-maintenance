@@ -14,6 +14,7 @@ public class InterventionServiceImpl implements InterventionService {
     public List<Intervention> findAuthorized(Utilisateur user) {
         var all = store.interventions.stream().sorted(Comparator.comparing(Intervention::getDateCreation).reversed());
         if (user.getRole() == Role.TECHNICIEN) return all.filter(i -> i.getTechnicien() != null && i.getTechnicien().getEmail().equalsIgnoreCase(user.getEmail())).toList();
+        if (user.getRole() == Role.DEMANDEUR) return all.filter(i -> i.getDemandeur() != null && i.getDemandeur().getId() == user.getId()).toList();
         return all.toList();
     }
     public List<Intervention> search(InterventionSearchCriteria c, Utilisateur user) {
@@ -33,12 +34,17 @@ public class InterventionServiceImpl implements InterventionService {
         validate(i); i.setId(store.intSeq.getAndIncrement()); i.setReference("INT-2026-" + String.format("%04d", i.getId())); i.setStatut(StatutIntervention.OUVERTE); i.setDemandeur(actor);
         store.interventions.add(i); historiques.add(i.getId(), "CREATION", "", i.getStatut().name(), actor.getNomUtilisateur()); journal.log(actor.getNomUtilisateur(), "INTERVENTION_CREATE", i.getReference()); return i;
     }
-    public void update(Intervention i, Utilisateur actor) { validate(i); i.setDateModification(LocalDateTime.now()); historiques.add(i.getId(), "MODIFICATION", "", i.getTitre(), actor.getNomUtilisateur()); }
+    public void update(Intervention i, Utilisateur actor) {
+        if (actor.getRole() == Role.TECHNICIEN || actor.getRole() == Role.DEMANDEUR) throw new BusinessException("Action non autorisée.");
+        validate(i); i.setDateModification(LocalDateTime.now()); historiques.add(i.getId(), "MODIFICATION", "", i.getTitre(), actor.getNomUtilisateur());
+    }
     public void assign(long interventionId, long technicienId, Utilisateur actor) {
+        if (actor.getRole() != Role.ADMINISTRATEUR && actor.getRole() != Role.RESPONSABLE) throw new BusinessException("Seuls l'administrateur et le responsable peuvent affecter un technicien.");
         var i = byId(interventionId); var old = i.getTechnicien() == null ? "" : i.getTechnicien().toString(); var t = techniciens.requireAssignable(technicienId);
         i.setTechnicien(t); i.setStatut(StatutIntervention.AFFECTEE); historiques.add(i.getId(), "AFFECTATION", old, t.toString(), actor.getNomUtilisateur()); journal.log(actor.getNomUtilisateur(), "INTERVENTION_ASSIGN", i.getReference());
     }
     public void changeStatus(long interventionId, StatutIntervention status, String solution, Utilisateur actor) {
+        if (actor.getRole() == Role.DEMANDEUR) throw new BusinessException("Action non autorisée.");
         var i = byId(interventionId); var old = i.getStatut();
         if (old == StatutIntervention.ANNULEE && status == StatutIntervention.EN_COURS) throw new BusinessException("Une intervention annulée ne peut pas repasser directement en cours.");
         if (status == StatutIntervention.TERMINEE) {
@@ -48,7 +54,29 @@ public class InterventionServiceImpl implements InterventionService {
         i.setStatut(status); if (status == StatutIntervention.EN_COURS && i.getDateDebut() == null) i.setDateDebut(LocalDateTime.now());
         historiques.add(i.getId(), "CHANGEMENT_STATUT", old.name(), status.name(), actor.getNomUtilisateur());
     }
-    public void cancel(long interventionId, Utilisateur actor) { changeStatus(interventionId, StatutIntervention.ANNULEE, "", actor); }
+    public void cancel(long interventionId, Utilisateur actor) {
+        if (actor.getRole() != Role.ADMINISTRATEUR && actor.getRole() != Role.RESPONSABLE) throw new BusinessException("Seuls l'administrateur et le responsable peuvent annuler une intervention.");
+        changeStatus(interventionId, StatutIntervention.ANNULEE, "", actor);
+    }
+    public void addDiagnostic(long interventionId, String diagnostic, Utilisateur actor) {
+        if (actor.getRole() == Role.DEMANDEUR) throw new BusinessException("Action non autorisée.");
+        var i = byId(interventionId);
+        i.setDiagnostic(diagnostic);
+        historiques.add(i.getId(), "DIAGNOSTIC", "", diagnostic, actor.getNomUtilisateur());
+    }
+    public void addSolution(long interventionId, String solution, Utilisateur actor) {
+        if (actor.getRole() == Role.DEMANDEUR) throw new BusinessException("Action non autorisée.");
+        var i = byId(interventionId);
+        i.setSolutionAppliquee(solution);
+        if (i.getDateFin() == null) i.setDateFin(LocalDateTime.now());
+        historiques.add(i.getId(), "SOLUTION", "", solution, actor.getNomUtilisateur());
+    }
+    public void addCommentaire(long interventionId, String commentaire, Utilisateur actor) {
+        if (actor.getRole() == Role.DEMANDEUR) throw new BusinessException("Action non autorisée.");
+        var i = byId(interventionId);
+        i.setCommentaire(commentaire);
+        historiques.add(i.getId(), "COMMENTAIRE", "", commentaire, actor.getNomUtilisateur());
+    }
     public File exportCsv(List<Intervention> interventions, File file) { return new ExportServiceImpl().exportInterventions(interventions, file); }
     private Intervention byId(long id) { return store.interventions.stream().filter(i -> i.getId() == id).findFirst().orElseThrow(() -> new ResourceNotFoundException("Intervention introuvable.")); }
     private void validate(Intervention i) {

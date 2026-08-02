@@ -39,6 +39,18 @@ public final class Ui {
     public static final Font FONT_HUGE = new Font("Segoe UI", Font.BOLD, 28);
     public static final Font FONT_HEADER = new Font("Segoe UI", Font.BOLD, 16);
 
+    public static final String LOGO_PATH = "/img/maintenx_logo.png";
+
+    public static Image appIcon() {
+        var url = Ui.class.getResource(LOGO_PATH);
+        return url == null ? null : new ImageIcon(url).getImage();
+    }
+
+    public static ImageIcon logoIcon(int size) {
+        var img = appIcon();
+        return img == null ? null : new ImageIcon(img.getScaledInstance(size, size, Image.SCALE_SMOOTH));
+    }
+
     public static JButton button(String text) {
         var b = new JButton(text);
         b.setFont(FONT_BOLD);
@@ -64,7 +76,7 @@ public final class Ui {
                 + "borderWidth:1;"
                 + "focusWidth:0;"
                 + "innerFocusWidth:0;"
-                + "background:transparent;"
+                + "background:#00000000;"
                 + "foreground:#1a1a1a;"
                 + "borderColor:#1a1a1a;");
         return b;
@@ -79,7 +91,7 @@ public final class Ui {
                 + "borderWidth:0;"
                 + "focusWidth:0;"
                 + "innerFocusWidth:0;"
-                + "background:transparent;"
+                + "background:#00000000;"
                 + "foreground:#666666;"
                 + "hoverBackground:#f0f0f0;");
         return b;

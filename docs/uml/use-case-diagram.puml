@@ -1,30 +1,177 @@
 @startuml
 left to right direction
-actor Administrateur
-actor Responsable
-actor Technicien
-rectangle MaintenX {
-  usecase "Se connecter" as Login
-  usecase "Gérer utilisateurs" as Users
-  usecase "Gérer techniciens" as Techs
-  usecase "Gérer interventions" as Ints
-  usecase "Affecter technicien" as Assign
-  usecase "Changer statut" as Status
-  usecase "Recherche avancée" as Search
-  usecase "Consulter statistiques" as Stats
-  usecase "Exporter CSV" as Csv
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam actorStyle awesome
+title Diagramme de cas d'utilisation - MaintenX
+caption Application Java de gestion des interventions de maintenance - SIRECOM
+
+' =========================
+' ACTEURS
+' =========================
+actor "Administrateur" as Admin
+actor "Responsable" as Resp
+actor "Technicien" as Tech
+actor "Utilisateur /\nDemandeur" as User
+
+rectangle "Système MaintenX" {
+
+    ' =========================
+    ' AUTHENTIFICATION
+    ' =========================
+    usecase "S'authentifier" as UC_Login
+    usecase "Se déconnecter" as UC_Logout
+    usecase "Modifier son profil" as UC_Profile
+    usecase "Changer son mot de passe" as UC_Password
+
+    ' =========================
+    ' GESTION UTILISATEURS
+    ' =========================
+    usecase "Gérer les utilisateurs" as UC_Users
+    usecase "Ajouter un utilisateur" as UC_AddUser
+    usecase "Modifier un utilisateur" as UC_EditUser
+    usecase "Rechercher un utilisateur" as UC_SearchUser
+    usecase "Activer / Désactiver\nun utilisateur" as UC_ActivateUser
+
+    ' =========================
+    ' GESTION TECHNICIENS
+    ' =========================
+    usecase "Gérer les techniciens" as UC_Techs
+    usecase "Ajouter un technicien" as UC_AddTech
+    usecase "Modifier un technicien" as UC_EditTech
+    usecase "Rechercher un technicien" as UC_SearchTech
+    usecase "Consulter les interventions\naffectées" as UC_TechInterventions
+
+    ' =========================
+    ' GESTION INTERVENTIONS
+    ' =========================
+    usecase "Gérer les interventions" as UC_Interventions
+    usecase "Créer une intervention" as UC_CreateIntervention
+    usecase "Modifier une intervention" as UC_EditIntervention
+    usecase "Supprimer / Annuler\nune intervention" as UC_CancelIntervention
+    usecase "Affecter un technicien" as UC_AssignTech
+    usecase "Modifier la priorité" as UC_Priority
+    usecase "Modifier le statut" as UC_Status
+    usecase "Ajouter un diagnostic" as UC_Diagnostic
+    usecase "Ajouter une solution" as UC_Solution
+    usecase "Ajouter un commentaire" as UC_Comment
+    usecase "Clôturer une intervention" as UC_CloseIntervention
+
+    ' =========================
+    ' RECHERCHE
+    ' =========================
+    usecase "Rechercher une intervention" as UC_SearchIntervention
+    usecase "Recherche multicritère" as UC_AdvancedSearch
+
+    ' =========================
+    ' HISTORIQUE
+    ' =========================
+    usecase "Consulter l'historique" as UC_History
+    usecase "Enregistrer une action\ndans l'historique" as UC_SaveHistory
+
+    ' =========================
+    ' TABLEAU DE BORD
+    ' =========================
+    usecase "Consulter le tableau de bord" as UC_Dashboard
+    usecase "Consulter les statistiques" as UC_Statistics
+    usecase "Voir les interventions\nouvertes" as UC_Open
+    usecase "Voir les interventions\nterminées" as UC_Done
+    usecase "Voir les interventions\npar priorité" as UC_ByPriority
+    usecase "Voir les interventions\npar technicien" as UC_ByTech
+
+    ' =========================
+    ' EXPORT / JOURNAL
+    ' =========================
+    usecase "Exporter les résultats\nau format CSV" as UC_Export
+    usecase "Consulter le journal\nd'activité" as UC_ActivityLog
+
+    ' =========================
+    ' RELATIONS INCLUDE
+    ' =========================
+    UC_Users ..> UC_AddUser : <<include>>
+    UC_Users ..> UC_EditUser : <<include>>
+    UC_Users ..> UC_SearchUser : <<include>>
+    UC_Users ..> UC_ActivateUser : <<include>>
+    UC_Techs ..> UC_AddTech : <<include>>
+    UC_Techs ..> UC_EditTech : <<include>>
+    UC_Techs ..> UC_SearchTech : <<include>>
+    UC_Techs ..> UC_TechInterventions : <<include>>
+    UC_Interventions ..> UC_CreateIntervention : <<include>>
+    UC_Interventions ..> UC_EditIntervention : <<include>>
+    UC_Interventions ..> UC_AssignTech : <<include>>
+    UC_Interventions ..> UC_Priority : <<include>>
+    UC_Interventions ..> UC_Status : <<include>>
+    UC_CreateIntervention ..> UC_SaveHistory : <<include>>
+    UC_AssignTech ..> UC_SaveHistory : <<include>>
+    UC_Status ..> UC_SaveHistory : <<include>>
+    UC_Priority ..> UC_SaveHistory : <<include>>
+    UC_EditIntervention ..> UC_SaveHistory : <<include>>
+    UC_CloseIntervention ..> UC_SaveHistory : <<include>>
+    UC_AdvancedSearch ..> UC_SearchIntervention : <<include>>
+    UC_Dashboard ..> UC_Statistics : <<include>>
+    UC_Dashboard ..> UC_Open : <<include>>
+    UC_Dashboard ..> UC_Done : <<include>>
+    UC_Dashboard ..> UC_ByPriority : <<include>>
+    UC_Dashboard ..> UC_ByTech : <<include>>
+
+    ' =========================
+    ' RELATIONS ACTEURS
+    ' =========================
+    Admin --> UC_Login
+    Admin --> UC_Logout
+    Admin --> UC_Profile
+    Admin --> UC_Password
+    Admin --> UC_Users
+    Admin --> UC_Techs
+    Admin --> UC_Interventions
+    Admin --> UC_SearchIntervention
+    Admin --> UC_AdvancedSearch
+    Admin --> UC_History
+    Admin --> UC_Dashboard
+    Admin --> UC_Export
+    Admin --> UC_ActivityLog
+
+    Resp --> UC_Login
+    Resp --> UC_Logout
+    Resp --> UC_Profile
+    Resp --> UC_Password
+    Resp --> UC_CreateIntervention
+    Resp --> UC_EditIntervention
+    Resp --> UC_CancelIntervention
+    Resp --> UC_AssignTech
+    Resp --> UC_Priority
+    Resp --> UC_Status
+    Resp --> UC_SearchIntervention
+    Resp --> UC_AdvancedSearch
+    Resp --> UC_History
+    Resp --> UC_Dashboard
+    Resp --> UC_Export
+
+    Tech --> UC_Login
+    Tech --> UC_Logout
+    Tech --> UC_Profile
+    Tech --> UC_Password
+    Tech --> UC_TechInterventions
+    Tech --> UC_Status
+    Tech --> UC_Diagnostic
+    Tech --> UC_Solution
+    Tech --> UC_Comment
+    Tech --> UC_CloseIntervention
+    Tech --> UC_History
+
+    User --> UC_Login
+    User --> UC_Logout
+    User --> UC_Profile
+    User --> UC_Password
+    User --> UC_CreateIntervention
+    User --> UC_SearchIntervention
+    User --> UC_History
+
+    ' =========================
+    ' EXTENSIONS
+    ' =========================
+    UC_Diagnostic ..> UC_Status : <<extend>>
+    UC_Solution ..> UC_CloseIntervention : <<extend>>
+    UC_Comment ..> UC_EditIntervention : <<extend>>
 }
-Administrateur --> Login
-Administrateur --> Users
-Administrateur --> Techs
-Administrateur --> Ints
-Responsable --> Login
-Responsable --> Ints
-Responsable --> Assign
-Responsable --> Search
-Technicien --> Login
-Technicien --> Status
-Ints ..> Assign : <<include>>
-Search ..> Csv : <<extend>>
-Stats ..> Search : <<include>>
 @enduml

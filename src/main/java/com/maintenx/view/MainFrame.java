@@ -23,6 +23,7 @@ import java.util.Map;
 public class MainFrame extends JFrame {
     private final CardLayout cards = new CardLayout();
     private final JPanel content = new JPanel(cards);
+    private final JPanel navPanel = new JPanel();
     private final Map<String, JButton> navButtons = new LinkedHashMap<>();
     private final Color SIDEBAR_BG = Ui.SIDEBAR;
     private final Color SIDEBAR_HOVER = Ui.SIDEBAR_HOVER;
@@ -31,12 +32,14 @@ public class MainFrame extends JFrame {
     public MainFrame(Utilisateur user, UtilisateurService utilisateurs, TechnicienService techniciens,
                      InterventionService interventions, DashboardService dashboard,
                      HistoriqueService historique, JournalActiviteService journal,
-                     ExportService export, ConfigurationService configuration) {
+                     ExportService export, ConfigurationService configuration,
+                     Runnable onLogout) {
         super("MaintenX - " + user.nomComplet());
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setSize(AppPreferences.windowSize());
         setLocationRelativeTo(null);
         setMinimumSize(new Dimension(900, 600));
+        setIconImage(Ui.appIcon());
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
@@ -47,34 +50,40 @@ public class MainFrame extends JFrame {
         var root = new JPanel(new BorderLayout());
         root.setBackground(Ui.CARD_BG);
 
-        var sidebar = createSidebar(user);
+        var sidebar = createSidebar(user, onLogout);
         root.add(sidebar, BorderLayout.WEST);
 
         content.setOpaque(true);
         content.setBackground(Ui.CARD_BG);
         root.add(content, BorderLayout.CENTER);
 
-        addPage("Tableau de bord", new DashboardPanel(new DashboardController(dashboard)));
-        if (user.getRole() == Role.ADMINISTRATEUR)
+        var role = user.getRole();
+        if (role == Role.ADMINISTRATEUR || role == Role.RESPONSABLE)
+            addPage("Tableau de bord", new DashboardPanel(new DashboardController(dashboard)));
+        if (role == Role.ADMINISTRATEUR)
             addPage("Utilisateurs", new UtilisateurPanel(new UtilisateurController(utilisateurs, user)));
-        if (user.getRole() != Role.TECHNICIEN)
+        if (role == Role.ADMINISTRATEUR)
             addPage("Techniciens", new TechnicienPanel(new TechnicienController(techniciens)));
         addPage("Interventions", new InterventionPanel(new InterventionController(interventions, user),
                 new TechnicienController(techniciens), user));
-        addPage("Recherche avancée", new RechercheAvanceePanel(new InterventionController(interventions, user)));
-        addPage("Rapports", new RapportPanel(new InterventionController(interventions, user), dashboard, user));
-        addPage("Historique", new HistoriquePanel(new HistoriqueController(historique)));
-        if (user.getRole() == Role.ADMINISTRATEUR)
+        if (role != Role.TECHNICIEN)
+            addPage("Recherche avancée", new RechercheAvanceePanel(new InterventionController(interventions, user)));
+        if (role == Role.ADMINISTRATEUR || role == Role.RESPONSABLE)
+            addPage("Rapports", new RapportPanel(new InterventionController(interventions, user), dashboard, user));
+        if (role == Role.ADMINISTRATEUR || role == Role.RESPONSABLE || role == Role.TECHNICIEN || role == Role.DEMANDEUR)
+            addPage("Historique", new HistoriquePanel(new HistoriqueController(historique)));
+        if (role == Role.ADMINISTRATEUR)
             addPage("Journal", new JournalActivitePanel(journal));
         addPage("Profil", new ProfilPanel(new ProfilController(utilisateurs, user)));
         addPage("Paramètres", new ParametresPanel(new ParametreController(configuration)));
 
         add(root, BorderLayout.CENTER);
 
-        showPage("Tableau de bord");
+        if (navButtons.containsKey("Tableau de bord"))
+            showPage("Tableau de bord");
     }
 
-    private JPanel createSidebar(Utilisateur user) {
+    private JPanel createSidebar(Utilisateur user, Runnable onLogout) {
         var sidebar = new JPanel(new BorderLayout());
         sidebar.setPreferredSize(new Dimension(240, 0));
         sidebar.setBackground(SIDEBAR_BG);
@@ -84,10 +93,15 @@ public class MainFrame extends JFrame {
         topPanel.setBackground(SIDEBAR_BG);
         topPanel.setBorder(BorderFactory.createEmptyBorder(20, 16, 16, 16));
 
+        var brandRow = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 0));
+        brandRow.setOpaque(false);
+        brandRow.add(new JLabel(Ui.logoIcon(34)));
+
         var brand = new JLabel("MaintenX");
         brand.setFont(Ui.FONT_TITLE.deriveFont(Font.BOLD, 22f));
         brand.setForeground(Color.WHITE);
-        topPanel.add(brand, BorderLayout.NORTH);
+        brandRow.add(brand);
+        topPanel.add(brandRow, BorderLayout.NORTH);
 
         var roleLabel = new JLabel(user.getRole().name());
         roleLabel.setFont(Ui.FONT_SMALL);
@@ -106,7 +120,6 @@ public class MainFrame extends JFrame {
 
         sidebar.add(topPanel, BorderLayout.NORTH);
 
-        var navPanel = new JPanel();
         navPanel.setLayout(new BoxLayout(navPanel, BoxLayout.Y_AXIS));
         navPanel.setBackground(SIDEBAR_BG);
         navPanel.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
@@ -138,9 +151,7 @@ public class MainFrame extends JFrame {
         var logoutBtn = createNavButton("\u2b9c  D\u00e9connexion");
         logoutBtn.addActionListener(e -> {
             AppPreferences.saveWindowSize(getSize());
-            JOptionPane.showMessageDialog(this,
-                    "Session termin\u00e9e. Relancez l'application pour ouvrir une nouvelle session.",
-                    "D\u00e9connexion", JOptionPane.INFORMATION_MESSAGE);
+            onLogout.run();
             dispose();
         });
         bottomPanel.add(logoutBtn);
@@ -162,8 +173,6 @@ public class MainFrame extends JFrame {
         b.setBorder(BorderFactory.createEmptyBorder(10, 12, 10, 12));
         b.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
         b.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-        b.putClientProperty(FlatClientProperties.STYLE, ""
-                + "arc:8;");
         b.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseEntered(MouseEvent e) {
@@ -186,6 +195,8 @@ public class MainFrame extends JFrame {
         var btn = createNavButton(name);
         btn.addActionListener(e -> showPage(name));
         navButtons.put(name, btn);
+        navPanel.add(btn);
+        navPanel.add(Box.createVerticalStrut(2));
     }
 
     private void showPage(String name) {

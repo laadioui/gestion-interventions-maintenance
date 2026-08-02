@@ -11,10 +11,11 @@ public class LoginFrame extends JFrame {
     public LoginFrame(LoginController controller) {
         super("MaintenX");
         setDefaultCloseOperation(EXIT_ON_CLOSE);
-        setSize(800, 500);
+        setSize(800, 520);
         setLocationRelativeTo(null);
         setResizable(false);
         setBackground(Ui.WHITE);
+        setIconImage(Ui.appIcon());
 
         var root = new JPanel(new BorderLayout());
 
@@ -24,9 +25,13 @@ public class LoginFrame extends JFrame {
         gbc.gridwidth = GridBagConstraints.REMAINDER;
         gbc.anchor = GridBagConstraints.CENTER;
 
+        var logo = new JLabel(Ui.logoIcon(150));
+        left.add(logo, gbc);
+
         var brand = new JLabel("MaintenX");
         brand.setFont(Ui.FONT_TITLE.deriveFont(Font.BOLD, 36f));
         brand.setForeground(Ui.WHITE);
+        gbc.insets = new Insets(16, 0, 0, 0);
         left.add(brand, gbc);
 
         root.add(left, BorderLayout.CENTER);
@@ -47,6 +52,12 @@ public class LoginFrame extends JFrame {
         loginTitle.setForeground(Ui.DARK);
         cgbc.insets = new Insets(0, 40, 20, 40);
         card.add(loginTitle, cgbc);
+
+        var roleBox = new JComboBox<>(new String[]{"Administrateur", "Responsable", "Technicien", "Demandeur"});
+        roleBox.setFont(Ui.FONT_REGULAR);
+        roleBox.putClientProperty(FlatClientProperties.STYLE, "arc:0;");
+        cgbc.insets = new Insets(0, 40, 12, 40);
+        card.add(roleBox, cgbc);
 
         var username = Ui.field(15);
         username.setText("admin");
@@ -70,6 +81,23 @@ public class LoginFrame extends JFrame {
         root.add(right, BorderLayout.EAST);
 
         add(root);
+
+        roleBox.addActionListener(e -> {
+            var role = (String) roleBox.getSelectedItem();
+            if ("Administrateur".equals(role)) {
+                username.setText("admin");
+                password.setText("Admin123!");
+            } else if ("Responsable".equals(role)) {
+                username.setText("responsable");
+                password.setText("Resp123!");
+            } else if ("Technicien".equals(role)) {
+                username.setText("tech");
+                password.setText("Tech123!");
+            } else if ("Demandeur".equals(role)) {
+                username.setText("demandeur");
+                password.setText("Dem123!");
+            }
+        });
 
         login.addActionListener(e -> {
             try {

@@ -9,7 +9,7 @@ import java.awt.*;
 public class AboutDialog extends JDialog {
     public AboutDialog(Window owner) {
         super(owner, "\u00c0 propos", ModalityType.APPLICATION_MODAL);
-        setSize(420, 280);
+        setSize(440, 360);
         setLocationRelativeTo(owner);
 
         var root = new JPanel(new BorderLayout(0, 12));
@@ -17,11 +17,20 @@ public class AboutDialog extends JDialog {
         root.setOpaque(true);
         root.putClientProperty(FlatClientProperties.STYLE, "arc:12;");
 
+        var top = new JPanel(new BorderLayout(0, 8));
+        top.setOpaque(false);
+
+        var logo = new JLabel(Ui.logoIcon(72));
+        logo.setHorizontalAlignment(SwingConstants.CENTER);
+        top.add(logo, BorderLayout.NORTH);
+
         var title = new JLabel("MaintenX");
         title.setFont(Ui.FONT_TITLE.deriveFont(Font.BOLD, 28f));
         title.setForeground(Ui.DARK);
         title.setHorizontalAlignment(SwingConstants.CENTER);
-        root.add(title, BorderLayout.NORTH);
+        top.add(title, BorderLayout.SOUTH);
+
+        root.add(top, BorderLayout.NORTH);
 
         var body = new JPanel(new GridLayout(0, 1, 0, 6));
         body.setOpaque(false);
